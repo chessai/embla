@@ -1,4 +1,4 @@
-cabal-version: 2.4
+cabal-version: 2.2
 name:
   embla
 version:
@@ -6,7 +6,9 @@ version:
 synopsis:
   execute actions periodically while avoiding drift
 description:
-  execute actions periodically while avoiding drift
+  This package is intended for use cases when 'cron'
+  is overkill, but the importance of avoiding drift
+  is still there. No care is taken w.r.t. GC times.
 homepage:
   https://github.com/chessai/embla
 bug-reports:
@@ -29,7 +31,7 @@ extra-doc-files:
     README.md
   , CHANGELOG.md
 tested-with:
-  GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.3
+  GHC == 8.4.4, GHC == 8.6.3
 
 library
   hs-source-dirs:
@@ -37,10 +39,10 @@ library
   exposed-modules:
     Embla
   build-depends:
-    , base >= 4.10.1.0 && < 4.13
+    , base >= 4.11 && < 4.14
+    , chronos >= 1.0.4 && < 1.1
   ghc-options:
     -Wall
-    -O2
   default-language:
     Haskell2010
 
