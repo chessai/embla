@@ -6,6 +6,8 @@ module Embla
   ) where
 
 import Control.Concurrent (threadDelay)
+import Control.Monad (void)
+import Data.Function (fix)
 import GHC.Clock (getMonotonicTimeNSec)
 import qualified Chronos as C
 
@@ -20,21 +22,17 @@ import qualified Chronos as C
 --   /Note/: No care is taken w.r.t. GC times.
 embla :: Int -> IO a -> IO a
 embla interval io = do
-  anchor <- fmap fromIntegral getMonotonicTimeNSec
-  let go = do
-        _ <- io
-        threadDelay =<< solveTime anchor interval
-        go
-  go
- 
-solveTime :: ()
-  => Int
-  -> Int
-  -> IO Int
+  anchor <- getMonotonicTimeNSec
+  fix $ \go -> do
+    void io
+    threadDelay =<< solveTime (fromIntegral anchor) interval
+    go
+
+solveTime :: Int -> Int -> IO Int
 solveTime t0 p = do
   C.Time now' <- C.now
   let now = fromIntegral now'
-  let p' = p * 1000000000
+  let p' = p * 1000 * 1000 * 1000
   let untilNextTime = ((div (now - t0) p') + 1) * p'
   let solved = div (t0 + untilNextTime - now) 1000
-  pure solved 
+  pure solved
